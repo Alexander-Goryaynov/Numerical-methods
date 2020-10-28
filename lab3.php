@@ -17,12 +17,13 @@
     </head>
     <body>        
         <div class="container py-2">
-            <h5>Разностный метод Ньютона с постоянным шагом</h5>
-            <h5>h = 0,001</h5>
+            <h5>Разностный метод Ньютона с заданным шагом h</h5>
             <?php
-            $eps = floatval(htmlentities($_POST['epsilon']));            
+            $eps = floatval(htmlentities($_POST['epsilon']));
+            $x = (int)(htmlentities($_POST['x']));
+            $h = floatval(htmlentities($_POST['h']));
             include 'lab3Logic.php';
-            start($eps);
+            start($eps, $x, $h);
             ?>
         </div>        
     </body>

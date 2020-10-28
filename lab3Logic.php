@@ -35,11 +35,9 @@ function displayAnswer(float $number, $eps): void {
     echo '<h5>' . sprintf($roundFormatStr, $number) . '</h5>';
 }
 
-function start($eps): void
+function start($eps, $x, $h): void
 {
     displayThead();
-    // шаг
-    $h = 0.001;
     // функция по варианту
     $f = fn(float $x): float => 1 - $x * log($x) + 0.3 * sqrt($x);
     // функция расчёта Xn+1
@@ -49,7 +47,7 @@ function start($eps): void
     while (true) {
         if ($i === 0) {
             $tab[0][0] = 0;
-            $tab[0][1] = 3;
+            $tab[0][1] = $x;
             $tab[0][2] = $f($tab[0][1]);
             $i++;
             continue;

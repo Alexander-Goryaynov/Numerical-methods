@@ -12,8 +12,18 @@
             <form action="lab3.php" method="POST">
                 <div class="form-group">
                     <label style="font-size: xx-large">&#x3B5;</label>
-                    <input name="epsilon" type="text" required 
-                        autocomplete="off" class="form-control" placeholder="эпсилон">
+                    <input name="epsilon" type="text" required value="0.0000001"
+                        autocomplete="off" class="form-control" placeholder="Эпсилон">
+                </div>
+                <div class="form-group">
+                    <label style="font-size: xx-large">x<sub>0</sub></label>
+                    <input name="x" type="text" required value="3"
+                        autocomplete="off" class="form-control" placeholder="Начальное приближение">
+                </div>
+                <div class="form-group">
+                    <label style="font-size: xx-large">h</label>
+                    <input name="h" type="text" required value="0.001"
+                        autocomplete="off" class="form-control" placeholder="Шаг">
                 </div>
                 <button type="submit" class="btn btn-success">Вычислить</button>
             </form>
