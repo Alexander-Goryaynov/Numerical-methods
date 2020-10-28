@@ -15,20 +15,14 @@
             }
         </style>
     </head>
-    <body>
-        <div class="container py-5">
+    <body>        
+        <div class="container py-2">
+            <h5>Разностный метод Ньютона с постоянным шагом</h5>
+            <h5>h = 0,001</h5>
             <?php
-            include 'lab2Logic.php';
-            $eps = floatval(htmlentities($_POST['epsilon']));
-            $a = [
-                [5.401, 0.519, 0.364, 0.283],
-                [0.295, 4.83, 0.421, 0.278],
-                [0.524, 0.397, 4.723, 0.389],
-                [0.503, 0.264, 0.248, 4.286]
-            ];
-            $b = [0.243, 0.231, 0.721, 0.22];
-            $solver = new RelaxationSolver($a, $b, $eps);
-            $solver->start();
+            $eps = floatval(htmlentities($_POST['epsilon']));            
+            include 'lab3Logic.php';
+            start($eps);
             ?>
         </div>        
     </body>
