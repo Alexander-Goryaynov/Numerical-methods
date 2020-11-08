@@ -17,6 +17,9 @@
                 td:hover {
                     background-color: #ffff64
                 }
+                tr:first-of-type {
+                    font-weight: bold;
+                }
             </style>
         {/literal}
     </head>
