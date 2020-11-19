@@ -8,11 +8,11 @@ $accuracy = - (int)log10($eps);
 $formatStr = '%01.' . (string)$accuracy . 'f';
 $tab = [];
 
-function fi1(float $x, float $y): float {
+function parDerFi1(float $x, float $y): float {
     return sin($x + 0.5) * (-2 * cos($x + 0.5) - 2 * $y + 1.6) + 8 * $x + 6.4 - 4 * sin($y);
 }
 
-function fi2(float $x, float $y): float {
+function parDerFi2(float $x, float $y): float {
     return 2 * cos($y) * sin($y) - 4 * $x * cos($y) + 2 * $y - 1.6 + 2 * cos($x + 0.5) - 3.2 * cos($y);
 }
 
@@ -22,14 +22,14 @@ function fmt(float $num, string $formatString): string {
 
 $tab[0][0] = $x;
 $tab[0][1] = $y;
-$tab[0][2] = fi1($x, $y);
-$tab[0][3] = fi2($x, $y);
+$tab[0][2] = parDerFi1($x, $y);
+$tab[0][3] = parDerFi2($x, $y);
 $n = 1;
 while(true) {
     $tab[$n][0] = $tab[$n - 1][0] - $alp * $tab[$n - 1][2];
     $tab[$n][1] = $tab[$n - 1][1] - $alp * $tab[$n - 1][3];
-    $tab[$n][2] = fi1($tab[$n][0], $tab[$n][1]);
-    $tab[$n][3] = fi2($tab[$n][0], $tab[$n][1]);
+    $tab[$n][2] = parDerFi1($tab[$n][0], $tab[$n][1]);
+    $tab[$n][3] = parDerFi2($tab[$n][0], $tab[$n][1]);
     $tab[$n][4] = max([abs($tab[$n][0] - $tab[$n - 1][0]), abs($tab[$n][1] - $tab[$n - 1][1])]);
     if ($tab[$n][4] < $eps) {
         break;

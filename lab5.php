@@ -9,15 +9,13 @@ if (isset($_POST['x0'])) {
     $x0 = (float) htmlentities($_POST['x0']);
 }
 
-// Точность после запятой.
+// Точность после запятой
 define('FMT', '%01.3f');
+// Шаг графика
+define('STEP', 0.01);
 
 $x = [0.357, 0.871, 1.567, 2.032, 2.628];
 $y = [0.548, 1.012, 1.159, 0.694, -0.503];
-// осторожно, АЛИНА СНИЗУ
-//$x = [0.134, 0.561, 1.341, 2.291, 6.913];
-//$y = [2.156, 3.348, 3.611, 4.112, 4.171];
-/* АЛИНА */
 
 function getLagrangeCoefficients(array $x, array $y): array
 {
@@ -37,10 +35,10 @@ function getLagrangeCoefficients(array $x, array $y): array
 function lagrangeFunc(float $xCur, array $x, array $p)
 {
     return ($p[0][2] * ($xCur - $x[1]) * ($xCur - $x[2]) * ($xCur - $x[3]) * ($xCur - $x[4]) +
-        $p[1][2] * ($xCur - $x[0]) * ($xCur - $x[2]) * ($xCur - $x[3]) * ($xCur - $x[4]) +
-        $p[2][2] * ($xCur - $x[0]) * ($xCur - $x[1]) * ($xCur - $x[3]) * ($xCur - $x[4]) +
-        $p[3][2] * ($xCur - $x[0]) * ($xCur - $x[1]) * ($xCur - $x[2]) * ($xCur - $x[4]) +
-        $p[4][2] * ($xCur - $x[0]) * ($xCur - $x[1]) * ($xCur - $x[2]) * ($xCur - $x[3]));
+            $p[1][2] * ($xCur - $x[0]) * ($xCur - $x[2]) * ($xCur - $x[3]) * ($xCur - $x[4]) +
+            $p[2][2] * ($xCur - $x[0]) * ($xCur - $x[1]) * ($xCur - $x[3]) * ($xCur - $x[4]) +
+            $p[3][2] * ($xCur - $x[0]) * ($xCur - $x[1]) * ($xCur - $x[2]) * ($xCur - $x[4]) +
+            $p[4][2] * ($xCur - $x[0]) * ($xCur - $x[1]) * ($xCur - $x[2]) * ($xCur - $x[3]));
 }
 
 function getLagrangePoints(float $xStart, float $h, array $x, array $p): array
@@ -54,22 +52,23 @@ function getLagrangePoints(float $xStart, float $h, array $x, array $p): array
         if ($i !== 0) {
             $l[$i][0] = $l[$i - 1][0] + $h;
         }
-        $l[$i][1] = lagrangeFunc($l[$i][0], $x, $p);                
+        $l[$i][1] = lagrangeFunc($l[$i][0], $x, $p);
         if ($l[$i][0] > $xEnd) {
             return $l;
         }
         $i++;
-    }    
+    }
 }
 
 function getLagrangeFormula(array $p, array $x): string
 {
     $res = "";
     for ($i = 0; $i < count($p); $i++) {
-        if ($p[$i][2] >= 0) {
-            $res .= sprintf(FMT, $p[$i][2]);
+        $coef = $p[$i][2];
+        if ($coef >= 0) {
+            $res .= sprintf(FMT, $coef);
         } else {
-            $res .= '(' . sprintf(FMT, $p[$i][2]) . ')';
+            $res .= '(' . sprintf(FMT, $coef) . ')';
         }
         for ($j = 0; $j < count($x); $j++) {
             if ($j === $i) {
@@ -78,18 +77,19 @@ function getLagrangeFormula(array $p, array $x): string
             $res .= ' &#8226; (X - ' . sprintf(FMT, $x[$j]) . ')';
         }
         if ($i !== count($p) - 1) {
-            $res .= '+';
+            $res .= ' + ';
         }
     }
     return $res;
 }
 
-function newtonFunc(float $x, array $d): float {
+function newtonFunc(float $x, array $d): float
+{
     return ($d[0][1] +
-        $d[0][2] * ($x - $d[0][0]) +
-        $d[0][3] * ($x - $d[0][0]) * ($x - $d[1][0]) +
-        $d[0][4] * ($x - $d[0][0]) * ($x - $d[1][0]) * ($x - $d[2][0]) +
-        $d[0][5] * ($x - $d[0][0]) * ($x - $d[1][0]) * ($x - $d[2][0]) * ($x - $d[3][0]));
+            $d[0][2] * ($x - $d[0][0]) +
+            $d[0][3] * ($x - $d[0][0]) * ($x - $d[1][0]) +
+            $d[0][4] * ($x - $d[0][0]) * ($x - $d[1][0]) * ($x - $d[2][0]) +
+            $d[0][5] * ($x - $d[0][0]) * ($x - $d[1][0]) * ($x - $d[2][0]) * ($x - $d[3][0]));
 }
 
 function getNewtonPoints(float $xStart, float $h, array $x, array $d): array
@@ -98,7 +98,7 @@ function getNewtonPoints(float $xStart, float $h, array $x, array $d): array
     $n[0][0] = $xStart;
     $xEnd = $x[count($x) - 1];
     $i = 0;
-    while(true) {
+    while (true) {
         if ($i !== 0) {
             $n[$i][0] = $n[$i - 1][0] + $h;
         }
@@ -108,6 +108,26 @@ function getNewtonPoints(float $xStart, float $h, array $x, array $d): array
         }
         $i++;
     }
+}
+
+function getNewtonFormula(array $d): string
+{
+    $res = "";
+    for ($i = 0; $i < count($d); $i++) {
+        $coef = $d[0][$i + 1];
+        if ($coef >= 0) {
+            $res .= sprintf(FMT, $coef);
+        } else {
+            $res .= '(' . sprintf(FMT, $coef) . ')';
+        }
+        for ($j = 0; $j < $i; $j++) {
+            $res .= ' &#8226; (X - ' . sprintf(FMT, $d[$j][0]) . ')';
+        }
+        if ($i !== count($d) - 1) {
+            $res .= ' + ';
+        }
+    }
+    return $res;
 }
 
 function getFinalDiffs(array $y): array
@@ -146,7 +166,61 @@ function getDividedDiffs(array $x, array $y): array
     return $m;
 }
 
-function buildGraph(array $datasets): void
+function getSplineCoeffs(array $x, array $y): array
+{
+    $a = [];
+    $b = [];
+    for ($i = 0; $i < count($x) - 1; $i++) {
+        $a[$i] = ($y[$i + 1] - $y[$i]) / ($x[$i + 1] - $x[$i]);
+        $b[$i] = $y[$i] - $a[$i] * $x[$i];
+    }
+    return [$a, $b];
+}
+
+function getSplineFormula(array $a, array $b, array $x): string
+{
+    $res = '';
+    $a = array_map(fn(&$x)=> sprintf(FMT, $x), $a);
+    $b = array_map(fn(&$x)=> sprintf(FMT, $x), $b);
+    for($i = 1; $i < count($a); $i++) {
+        $res .= $a[$i - 1] . ' &#8226; X + ' . $b[$i - 1] . ',&nbsp;&nbsp;&nbsp;' .
+                $x[$i - 1] . ' &le; X &le; ' . $x[$i];
+        $res .= '<br>';
+    }
+    return $res;
+}
+
+function splineFunc(float $x0, array $x, array $a, array $b): ?float
+{
+    for ($i = 0; $i < count($x) - 1; $i++) {
+        if (($x0 > $x[$i] || abs($x0 - $x[$i] < PHP_FLOAT_EPSILON)) && $x0 < $x[$i + 1]) {
+            return $a[$i] * $x0 + $b[$i]; 
+        }
+    }
+    return null;
+}
+
+function getSplinePoints(float $xStart, float $h, array $x, array $a, array $b): array
+{
+    $s = [];
+    $s[0][0] = $xStart;
+    $i = 0;
+    while (true) {
+        if ($i !== 0) {
+            $s[$i][0] = $s[$i - 1][0] + $h;
+        }
+        $funcRes = splineFunc($s[$i][0], $x, $a, $b);
+        if (is_null($funcRes)) {
+            unset($s[$i][0]);
+            return $s;
+        } else {
+            $s[$i][1] = $funcRes;
+        }        
+        $i++;
+    }
+}
+
+function buildGraph(array $datasets, array $lineColors): void
 {
     // Задаём размер изображения
     $graph = new Graph(1200, 700);
@@ -158,9 +232,12 @@ function buildGraph(array $datasets): void
     $graph->xaxis->title->Set('x');
     $graph->yaxis->title->Set('y');
     
-    foreach ($datasets as $dataset) {
+    for($i = 0; $i < count($datasets); $i++) {
+        $dataset = $datasets[$i];
+        $color = $lineColors[$i];
         $plot = new LinePlot($dataset[1], $dataset[0]);        
         $graph->Add($plot);
+        $plot->SetColor($color);
     }
 
     // Сохраняем в файл
@@ -180,26 +257,86 @@ function transposeMatrix(array &$m): void
     $m = $t;
 }
 
+function formatMatrix(array &$matrix): void
+{
+    foreach ($matrix as &$row) {
+        foreach ($row as &$cell) {
+            $cell = sprintf(FMT, $cell);
+        }
+    }
+}
+
 // Полином Лагранжа
 $coefs = getLagrangeCoefficients($x, $y);
 $lagrFormula = getLagrangeFormula($coefs, $x);
-$lagrPoints = getLagrangePoints(0, 0.1, $x, $coefs);
+$lagrPoints = getLagrangePoints($x[0], STEP, $x, $coefs);
 $lagrResult = sprintf(FMT, lagrangeFunc($x0, $x, $coefs));
 transposeMatrix($lagrPoints);
 
 // Полином Ньютона
 $dividedDiffs = getDividedDiffs($x, $y);
-$newtonPoints = getNewtonPoints(0, 0.1, $x, $dividedDiffs);
+$newtonFormula = getNewtonFormula($dividedDiffs);
+$newtonPoints = getNewtonPoints($x[0], STEP, $x, $dividedDiffs);
 $newtonResult = sprintf(FMT, newtonFunc($x0, $dividedDiffs));
 transposeMatrix($newtonPoints);
 
-// Построение графиков
-$datasets = [$lagrPoints, $newtonPoints];
-buildGraph($datasets);
+// Линейный сплайн
+$splineCoefs = getSplineCoeffs($x, $y);
+list($a, $b) = $splineCoefs;
+$splineFormula = getSplineFormula($a, $b, $x);
+$funcRes = splineFunc($x0, $x, $a, $b);
+$splineResult = (is_null($funcRes)) ? 'error' : sprintf(FMT, $funcRes);
+$splinePoints = getSplinePoints($x[0], STEP, $x, $a, $b);
+transposeMatrix($splinePoints);
 
+// Построение графиков
+$lineColors = [
+    'disp-lagr' => '#0056b3', 
+    'disp-newt' => '#ee3b3b', 
+    'disp-spl' => '#00cc00'
+    ];
+$datasets = [];
+if (isset($_POST['disp-lagr'])) {
+    $datasets[] = $lagrPoints;
+} else {
+    unset($lineColors['disp-lagr']);
+}
+if (isset($_POST['disp-newt'])) {
+    $datasets[] = $newtonPoints;
+} else {
+    unset($lineColors['disp-newt']);
+}
+if (isset($_POST['disp-spl'])) {
+    $datasets[] = $splinePoints;
+} else {
+    unset($lineColors['disp-spl']);
+}
+try {
+    buildGraph($datasets, array_values($lineColors));
+} catch (Exception $ex) {}
+
+
+// Форматирование промежуточных результатов вычислений
+formatMatrix($coefs);
+formatMatrix($lagrPoints);
+formatMatrix($dividedDiffs);
+formatMatrix($newtonPoints);
+formatMatrix($splineCoefs);
+formatMatrix($splinePoints);
+
+// Передача данных в шаблон
 $smarty = new Smarty();
 $smarty->assign('lagrFormula', $lagrFormula);
 $smarty->assign('lagrResult', $lagrResult);
+$smarty->assign('lagrCoeffs', $coefs);
+$smarty->assign('lagrPoints', $lagrPoints);
+$smarty->assign('newtonFormula', $newtonFormula);
 $smarty->assign('newtonResult', $newtonResult);
+$smarty->assign('dividedDiffs', $dividedDiffs);
+$smarty->assign('newtonPoints', $newtonPoints);
+$smarty->assign('splineCoefs', $splineCoefs);
+$smarty->assign('splineFormula', $splineFormula);
+$smarty->assign('splineResult', $splineResult);
+$smarty->assign('splinePoints', $splinePoints);
 $smarty->assign('x0', $x0);
 $smarty->display('lab5.tpl');

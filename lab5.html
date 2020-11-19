@@ -15,7 +15,23 @@
                 <div class="form-group">
                     <label style="font-size: xx-large">x<sub>o</sub></label>
                     <input name="x0" type="text" required value="1.0"
-                        autocomplete="off" class="form-control">
+                           autocomplete="off" class="form-control">
+                </div>
+                <label>Отобразить графики:</label>
+                <div class="form-group form-check">
+                    <label class="form-check-label">
+                        <input class="form-check-input" checked type="checkbox" name="disp-lagr"> Полином Лагранжа
+                    </label>
+                </div>
+                <div class="form-group form-check">
+                    <label class="form-check-label">
+                        <input class="form-check-input" checked type="checkbox" name="disp-newt"> Полином Ньютона
+                    </label>
+                </div>
+                <div class="form-group form-check">
+                    <label class="form-check-label">
+                        <input class="form-check-input" checked type="checkbox" name="disp-spl"> Линейный сплайн
+                    </label>
                 </div>
                 <button type="submit" class="btn btn-success">Вычислить</button>
             </form>
