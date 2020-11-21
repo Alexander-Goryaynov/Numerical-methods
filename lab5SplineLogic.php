@@ -16,7 +16,7 @@ function getSplineFormula(array $a, array $b, array $x): string
     $res = '';
     $a = array_map(fn(&$x)=> sprintf(FMT, $x), $a);
     $b = array_map(fn(&$x)=> sprintf(FMT, $x), $b);
-    for($i = 1; $i < count($a); $i++) {
+    for($i = 1; $i < count($x); $i++) {
         $res .= $a[$i - 1] . ' &#8226; X + ' . $b[$i - 1] . ',&nbsp;&nbsp;&nbsp;' .
                 $x[$i - 1] . ' &le; X &le; ' . $x[$i];
         $res .= '<br>';
