@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Горяйнов л.р. 5</title>
+    <style>
+        html {
+            width: 100%;
+            height: 100%;
+        }
+        body {
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            background: linear-gradient(to top left, #d391f4, #8ef8fd);
+            overflow: hidden;
+        }
+        form {
+            padding-top: 5%;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <form action="lab5.php" method="get">
+        <p>
+            10 &bull; x &bull; ln(x) - x<sup>2</sup> / 2
+        </p>
+        <p>
+            <label for="method">Метод:</label>
+            <select name="method" id="method">
+                <option value="uniform">
+                    Метод равномерного поиска
+                </option>
+                <option value="newton">
+                    Метод Ньютона
+                </option>
+                <option value="half-division">
+                    Метод половинного деления
+                </option>
+            </select>
+        </p>
+        <p>
+            <label for="left">
+                Левая граница:
+            </label>
+            <input name="left" id="left" type="text"/>
+        </p>
+        <p>
+            <label for="right">
+                Правая граница:
+            </label>
+            <input name="right" id="right" type="text"/>
+        </p>
+        <p>
+            <label for="accuracy">
+                Точность:
+            </label>
+            <input name="accuracy" id="accuracy" type="text"/>
+        </p>
+        <p>
+            <label for="count">
+                Число итераций:
+            </label>
+            <input name="count" id="count" type="text"/>
+        </p>
+        <button type="submit">
+            Выполнить
+        </button>
+    </form>
+</div>
+</body>
+</html>
