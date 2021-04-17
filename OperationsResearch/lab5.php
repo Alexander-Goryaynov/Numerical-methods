@@ -112,7 +112,7 @@ function svenn(float $x0, float $h, array &$res): array
 
 function uniform(float $a, float $b, $n, float $acc, array &$res): void
 {
-    $res[] = 'Метод равномерного поиска';
+    $res[] = 'Метод равномерного поиска:';
     $n ??= 1000;
     $h = ($b - $a) / $n;
     $xMin = $a;
@@ -136,7 +136,7 @@ function uniform(float $a, float $b, $n, float $acc, array &$res): void
 
 function newton(float $start, float $eps, array &$res): void
 {
-    $res[] = 'Метод Ньютона';
+    $res[] = 'Метод Ньютона:';
     $x1 = null;
     $dx = null;
     $x0 = $start;
@@ -161,7 +161,50 @@ function newton(float $start, float $eps, array &$res): void
 
 function halfDivision(float $a, float $b, float $eps, array &$res): void
 {
-    
+    // шаг 1
+    $res[] = 'Метод половинного деления:';
+    $a = [$a];
+    $b = [$b];
+    $xc = [];
+    $l2 = [];
+    $y = [];
+    $z = [];
+    // шаг 2
+    $k = 0;
+    while (true) {
+    // шаг 3
+    $xc[$k] = ($a[$k] + $b[$k]) / 2;
+    $l2[$k] = $b[$k] - $a[$k];
+        // шаг 4
+        $y[$k] = $a[$k] + abs($l2[$k]) / 4;
+        $z[$k] = $b[$k] - abs($l2[$k]) / 4;
+        // шаг 5
+        if (f($y[$k]) < f($xc[$k])) {
+            $b[$k + 1] = $xc[$k];
+            $a[$k + 1] = $a[$k];
+            $xc[$k + 1] = $y[$k];
+        } else {
+            // шаг 6
+            if (f($z[$k]) < f($xc[$k])) {
+                $a[$k + 1] = $xc[$k];
+                $b[$k + 1] = $b[$k];
+                $xc[$k + 1] = $z[$k];
+            } else {
+                $a[$k + 1] = $y[$k];
+                $b[$k + 1] = $z[$k];
+                $xc[$k + 1] = $xc[$k];
+            }
+        }
+        // шаг 7
+        $l2[$k + 1] = abs($b[$k + 1] - $a[$k + 1]);
+        if (abs($l2[$k + 1]) <= $eps) {
+            $res[] = 'РЕЗУЛЬТАТ работы метода половинного деления: минимум ф-ии находится в точке (' .
+                rndAc($xc[$k + 1], $eps) . ';' . rndAc(f($xc[$k + 1]), $eps) . ')';
+            return;
+        } else {
+            $k++;
+        }
+    }
 }
 
 $method = $_GET['method'];
@@ -180,6 +223,7 @@ switch ($method) {
         newton($left, $accuracy, $resultLines);
         break;
     case Algorithm::HALF_DIVISION:
+        halfDivision($left, $right, $accuracy, $resultLines);
         break;
 }
 displayResults($resultLines);
