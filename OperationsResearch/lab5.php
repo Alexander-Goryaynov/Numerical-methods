@@ -163,6 +163,7 @@ function halfDivision(float $a, float $b, float $eps, array &$res): void
 {
     // шаг 1
     $res[] = 'Метод половинного деления:';
+    $res[] = "Задали начальный интервал неопределённости L = [$a, $b]";
     $a = [$a];
     $b = [$b];
     $xc = [];
@@ -171,38 +172,52 @@ function halfDivision(float $a, float $b, float $eps, array &$res): void
     $z = [];
     // шаг 2
     $k = 0;
+    $res[] = "k = $k";
     while (true) {
-    // шаг 3
-    $xc[$k] = ($a[$k] + $b[$k]) / 2;
-    $l2[$k] = $b[$k] - $a[$k];
+        // шаг 3
+        $xc[$k] = ($a[$k] + $b[$k]) / 2;
+        $l2[$k] = $b[$k] - $a[$k];
+        $res[] = "xc[k] = $xc[$k]; l2[k] = $l2[$k]";
         // шаг 4
         $y[$k] = $a[$k] + abs($l2[$k]) / 4;
         $z[$k] = $b[$k] - abs($l2[$k]) / 4;
+        $res[] = "y[k] = $y[$k]; z[k] = $z[$k]";
         // шаг 5
         if (f($y[$k]) < f($xc[$k])) {
+            $res[] = "f(y[k]) < f(xc[k]), тогда";
             $b[$k + 1] = $xc[$k];
             $a[$k + 1] = $a[$k];
             $xc[$k + 1] = $y[$k];
+            $res[] = "b[k+1] = {$b[$k + 1]}, a[k+1] = {$a[$k + 1]}, xc[k+1] = {$xc[$k + 1]}";
         } else {
+            $res[] = "f(y[k]) >= f(xc[k]), тогда";
             // шаг 6
             if (f($z[$k]) < f($xc[$k])) {
+                $res[] = "f(z[k]) < f(xc[k]), тогда";
                 $a[$k + 1] = $xc[$k];
                 $b[$k + 1] = $b[$k];
                 $xc[$k + 1] = $z[$k];
+                $res[] = "b[k+1] = {$b[$k + 1]}, a[k+1] = {$a[$k + 1]}, xc[k+1] = {$xc[$k + 1]}";
             } else {
+                $res[] = "f(z[k]) >= f(xc[k]), тогда";
                 $a[$k + 1] = $y[$k];
                 $b[$k + 1] = $z[$k];
                 $xc[$k + 1] = $xc[$k];
+                $res[] = "b[k+1] = {$b[$k + 1]}, a[k+1] = {$a[$k + 1]}, xc[k+1] = {$xc[$k + 1]}";
             }
         }
         // шаг 7
         $l2[$k + 1] = abs($b[$k + 1] - $a[$k + 1]);
+        $res[] = "l2[k+1] = {$l2[$k+1]}";
         if (abs($l2[$k + 1]) <= $eps) {
+            $res[] = "l2[k+1] < &#949;";
             $res[] = 'РЕЗУЛЬТАТ работы метода половинного деления: минимум ф-ии находится в точке (' .
                 rndAc($xc[$k + 1], $eps) . ';' . rndAc(f($xc[$k + 1]), $eps) . ')';
             return;
         } else {
             $k++;
+            $res[] = "k = $k";
+            $res[] = "новая итерация";
         }
     }
 }
