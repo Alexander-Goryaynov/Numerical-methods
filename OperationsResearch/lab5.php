@@ -223,12 +223,14 @@ function halfDivision(float $a, float $b, float $eps, array &$res): void
 }
 
 $method = $_GET['method'];
+// TODO заменить поле $right на $h
 $left = null;
 $right = null;
 $accuracy = null;
 $count = null;
 processRequestParams($left, $right, $accuracy, $count);
 $resultLines = [];
+// TODO вводить для алгоритма Свенна параметры $x0(т.е. $left) и $h с клавиатуры
 [$left, $right] = svenn(0.2, 0.1, $resultLines);
 switch ($method) {
     case Algorithm::UNIFORM:
